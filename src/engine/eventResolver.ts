@@ -1,9 +1,10 @@
 import type { EventEffect, GameEvent, GameState } from "../types";
 import { clamp } from "../utils/clamp";
+import { contractDisease } from "./diseaseEngine";
 import { rollSkill } from "./skillCheck";
 
 export function applyEffects(state: GameState, effects: EventEffect): GameState {
-	const next = { ...state };
+	let next = { ...state };
 	if (effects.fuel !== undefined) next.fuel = clamp(next.fuel + effects.fuel, 0, 100);
 	if (effects.sanity !== undefined) next.sanity = clamp(next.sanity + effects.sanity, 0, 100);
 	if (effects.cash !== undefined) next.cash = Math.max(0, next.cash + effects.cash);
@@ -13,6 +14,7 @@ export function applyEffects(state: GameState, effects: EventEffect): GameState 
 	if (effects.laserAmmo !== undefined)
 		next.laserAmmo = Math.max(0, next.laserAmmo + effects.laserAmmo);
 	if (effects.meat !== undefined) next.meat = Math.max(0, next.meat + effects.meat);
+	if (effects.diseaseAdd !== undefined) next = contractDisease(next, effects.diseaseAdd);
 	return next;
 }
 

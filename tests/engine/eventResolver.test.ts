@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { applyEffects, resolveEventChoice } from "../../src/engine/eventResolver";
 import type { GameEvent, GameState } from "../../src/types";
-import { Phase } from "../../src/types";
+import { Disease, DrugType, Phase, RationType } from "../../src/types";
 
 function makeState(overrides?: Partial<GameState>): GameState {
 	return {
@@ -24,6 +24,16 @@ function makeState(overrides?: Partial<GameState>): GameState {
 		},
 		log: [],
 		players: { p1: { name: "Duke", alive: true } },
+		drugInventory: { weed: 0, coke: 0, meth: 0, shine: 0, pills: 0 },
+		drugStatus: { weedReadyAt: -1, shineReadyAt: -1 },
+		diseases: [],
+		rationTier: RationType.Normal,
+		shankCooldown: false,
+		shankStunned: false,
+		hustleDone: false,
+		buskDone: false,
+		methCookUsed: false,
+		cokeCookUsed: false,
 		...overrides,
 	};
 }
@@ -238,5 +248,117 @@ describe("resolveEventChoice", () => {
 		expect(result.newState.cash).toBe(420);
 		expect(result.text).toBe("You won $120!");
 		vi.restoreAllMocks();
+	});
+});
+
+describe("disease event resolution", () => {
+	it("TB event push through: adds TB to diseases", () => {
+		const event: GameEvent = {
+			id: "tuberculosis",
+			title: "BLOOD IN THE HANDKERCHIEF",
+			text: "You've been coughing.",
+			choices: [
+				{
+					id: "tb_push",
+					label: "Push through",
+					effects: { sanity: -10, diseaseAdd: Disease.TB },
+					flavor: "TB acquired.",
+				},
+			],
+		};
+		const result = resolveEventChoice(makeState(), event, "tb_push");
+		expect(result.newState.diseases).toContain(Disease.TB);
+		expect(result.newState.sanity).toBe(60); // 70 - 10
+	});
+
+	it("measles event ignore: adds measles to diseases", () => {
+		const event: GameEvent = {
+			id: "measles",
+			title: "SPOTS",
+			text: "Your skin is doing something unsettling.",
+			choices: [
+				{
+					id: "measles_ignore",
+					label: "Ignore it",
+					effects: { diseaseAdd: Disease.Measles },
+					flavor: "Measles acquired.",
+				},
+			],
+		};
+		const result = resolveEventChoice(makeState(), event, "measles_ignore");
+		expect(result.newState.diseases).toContain(Disease.Measles);
+	});
+
+	it("broken bones clinic with enough cash: no disease, cash deducted", () => {
+		const event: GameEvent = {
+			id: "broken_bones",
+			title: "THAT SOUND WAS YOUR RIB",
+			text: "The rib situation is not minor.",
+			choices: [
+				{
+					id: "broken_clinic",
+					label: "Find a clinic ($200)",
+					effects: {},
+					conditionalCheck: {
+						resource: "cash",
+						minRequired: 200,
+						consumeAmount: 200,
+						passText: "Clinic patches you up. $200.",
+						failEffects: { diseaseAdd: Disease.BrokenBones },
+						failText: "Broke. Untreated fracture acquired.",
+					},
+					flavor: "$200 or broken bones.",
+				},
+			],
+		};
+		const result = resolveEventChoice(makeState({ cash: 300 }), event, "broken_clinic");
+		expect(result.newState.diseases).not.toContain(Disease.BrokenBones);
+		expect(result.newState.cash).toBe(100); // 300 - 200
+		expect(result.text).toBe("Clinic patches you up. $200.");
+	});
+
+	it("broken bones clinic without cash: adds broken bones disease", () => {
+		const event: GameEvent = {
+			id: "broken_bones",
+			title: "THAT SOUND WAS YOUR RIB",
+			text: "The rib situation is not minor.",
+			choices: [
+				{
+					id: "broken_clinic",
+					label: "Find a clinic ($200)",
+					effects: {},
+					conditionalCheck: {
+						resource: "cash",
+						minRequired: 200,
+						consumeAmount: 200,
+						passText: "Clinic patches you up. $200.",
+						failEffects: { diseaseAdd: Disease.BrokenBones },
+						failText: "Broke. Untreated fracture acquired.",
+					},
+					flavor: "$200 or broken bones.",
+				},
+			],
+		};
+		const result = resolveEventChoice(makeState({ cash: 50 }), event, "broken_clinic");
+		expect(result.newState.diseases).toContain(Disease.BrokenBones);
+		expect(result.text).toBe("Broke. Untreated fracture acquired.");
+	});
+
+	it("disease not added if already present (dedup from contractDisease)", () => {
+		const event: GameEvent = {
+			id: "tuberculosis",
+			title: "BLOOD IN THE HANDKERCHIEF",
+			text: "Again.",
+			choices: [
+				{
+					id: "tb_push",
+					label: "Push through",
+					effects: { diseaseAdd: Disease.TB },
+					flavor: "TB again.",
+				},
+			],
+		};
+		const result = resolveEventChoice(makeState({ diseases: [Disease.TB] }), event, "tb_push");
+		expect(result.newState.diseases.filter((d) => d === Disease.TB)).toHaveLength(1);
 	});
 });
