@@ -1,5 +1,5 @@
-// Fear & Loathing Trail — Service Worker (Vite-compatible)
-const CACHE = 'flt-v4-cache-v1';
+// Fear & Loathing Trail v19 — Service Worker (Vite-compatible)
+const CACHE = 'flt-v19-cache-v1';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

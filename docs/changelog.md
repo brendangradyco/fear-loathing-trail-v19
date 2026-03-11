@@ -26,3 +26,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `42edcee` feat: add chiptune audio module with Web Audio API (src/App.tsx,src/audio/chiptune.ts) — 2026-03-11
 - `d083307` feat: add pixel art scenes for all 19 v19 events (src/components/game/PixelScene.tsx) — 2026-03-11
 - `2963087` feat: add disease event handling to event resolver (src/engine/eventResolver.ts,tests/engine/eventResolver.test.ts) — 2026-03-11
+- `7e8a181` chore: update PWA manifest for v19 (public/manifest.json,public/sw.js) — 2026-03-11
