@@ -20,3 +20,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `56f1849` feat: update win/death screens for Bogota route (src/components/screens/DeathScreen.tsx,src/components/screens/WinScreen.tsx) — 2026-03-11
 - `9bc7123` feat: implement hustle pickpocket minigame screen (src/components/screens/HustleGame.tsx) — 2026-03-11
 - `1501f8e` feat: implement busk street performance minigame screen (src/components/screens/BuskGame.tsx) — 2026-03-11
+- `121194d` feat: implement drug deal stress minigame screen (src/components/screens/DrugDealGame.tsx) — 2026-03-11
