@@ -1,3 +1,4 @@
+import { DRUG_CATALOG } from "../../data/drugs";
 import { useGameStore } from "../../stores/gameStore";
 
 export default function StatsBar() {
@@ -37,6 +38,9 @@ export default function StatsBar() {
 		},
 	];
 
+	const totalDrugs = DRUG_CATALOG.reduce((sum, d) => sum + (state.drugInventory?.[d.id] ?? 0), 0);
+	const diseaseCount = state.diseases?.length ?? 0;
+
 	return (
 		<div className="safe-top flex shrink-0 flex-wrap gap-1.5 border-b border-border bg-surface px-2.5 py-2">
 			{chips.map((ch) => (
@@ -48,6 +52,22 @@ export default function StatsBar() {
 					<span className={`font-bold ${ch.color}`}>{ch.value}</span>
 				</div>
 			))}
+
+			{/* Disease indicator */}
+			{diseaseCount > 0 && (
+				<div className="flex items-center gap-1 whitespace-nowrap rounded-2xl bg-red/20 px-2.5 py-1.5 text-[12px] ring-1 ring-red/40">
+					<span className="text-[14px]">{"💀"}</span>
+					<span className="font-bold text-red">{diseaseCount}</span>
+				</div>
+			)}
+
+			{/* Drug inventory indicator */}
+			{totalDrugs > 0 && (
+				<div className="flex items-center gap-1 whitespace-nowrap rounded-full bg-purple/20 px-2.5 py-1.5 text-[12px] ring-1 ring-purple/40">
+					<span className="text-[14px]">{"💊"}</span>
+					<span className="font-bold text-purple">{totalDrugs}</span>
+				</div>
+			)}
 		</div>
 	);
 }
