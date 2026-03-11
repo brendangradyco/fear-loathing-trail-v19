@@ -1,8 +1,17 @@
 import { create } from "zustand";
 import { applyEffects, resolveEventChoice } from "../engine/eventResolver";
 import { checkDeath, checkWin, createNewGame, rest, travel } from "../engine/gameLoop";
-import type { GameEvent, GameState, LogEntry, ShopItem, SkillSet } from "../types";
-import { Phase } from "../types";
+import { contractDisease, cureDisease } from "../engine/diseaseEngine";
+import {
+	buyDrug,
+	cookDrug,
+	harvestDrug,
+	sellDrug,
+	startGrow,
+	startStill,
+} from "../engine/drugEconomy";
+import type { Disease, DrugDef, Fiend, GameEvent, GameState, LogEntry, MedicineItem, ShopItem, SkillSet } from "../types";
+import { DrugType, Phase, RationType } from "../types";
 import { clearGame, loadGame, saveGame } from "../utils/storage";
 
 interface GameStore {
@@ -22,6 +31,19 @@ interface GameStore {
 	clearEvent: () => void;
 	resetGame: () => void;
 	syncFromNetwork: (remoteState: GameState) => void;
+	// Drug economy actions
+	buyDrug: (drug: DrugDef, qty: number) => void;
+	sellDrug: (drug: DrugDef, qty: number, fiend: Fiend) => { busted: boolean; earnings: number };
+	startGrow: () => void;
+	startStill: () => void;
+	harvestDrug: (type: DrugType.Weed | DrugType.Shine) => void;
+	cookDrug: (type: DrugType.Meth | DrugType.Coke) => void;
+	// Disease actions
+	contractDisease: (disease: Disease) => void;
+	cureDisease: (disease: Disease) => void;
+	buyMedicine: (medicine: MedicineItem) => boolean;
+	// Ration action
+	setRation: (tier: RationType) => void;
 }
 
 function capLog(log: LogEntry[]): LogEntry[] {
@@ -193,6 +215,112 @@ export const useGameStore = create<GameStore>((set, get) => ({
 	syncFromNetwork: (remoteState) => {
 		set({ state: remoteState });
 		saveGame(remoteState);
+	},
+
+	// -----------------------------------------------------------
+	// Drug economy actions
+	// -----------------------------------------------------------
+
+	buyDrug: (drug, qty) => {
+		const { state: current } = get();
+		if (!current) return;
+		const next = buyDrug(current, drug, qty);
+		set({ state: next });
+		saveGame(next);
+	},
+
+	sellDrug: (drug, qty, fiend) => {
+		const { state: current } = get();
+		if (!current) return { busted: false, earnings: 0 };
+		const result = sellDrug(current, drug, qty, fiend);
+		set({ state: result.newState });
+		saveGame(result.newState);
+		return { busted: result.busted, earnings: result.earnings };
+	},
+
+	startGrow: () => {
+		const { state: current } = get();
+		if (!current) return;
+		const next = startGrow(current);
+		set({ state: next });
+		saveGame(next);
+	},
+
+	startStill: () => {
+		const { state: current } = get();
+		if (!current) return;
+		const next = startStill(current);
+		set({ state: next });
+		saveGame(next);
+	},
+
+	harvestDrug: (type) => {
+		const { state: current } = get();
+		if (!current) return;
+		const next = harvestDrug(current, type);
+		set({ state: next });
+		saveGame(next);
+	},
+
+	cookDrug: (type) => {
+		const { state: current } = get();
+		if (!current) return;
+		const next = cookDrug(current, type);
+		set({ state: next });
+		saveGame(next);
+	},
+
+	// -----------------------------------------------------------
+	// Disease actions
+	// -----------------------------------------------------------
+
+	contractDisease: (disease) => {
+		const { state: current } = get();
+		if (!current) return;
+		const next = contractDisease(current, disease);
+		set({ state: next });
+		saveGame(next);
+	},
+
+	cureDisease: (disease) => {
+		const { state: current } = get();
+		if (!current) return;
+		const next = cureDisease(current, disease);
+		set({ state: next });
+		saveGame(next);
+	},
+
+	buyMedicine: (medicine) => {
+		const { state: current } = get();
+		if (!current || current.cash < medicine.price) return false;
+
+		let next: GameState = { ...current, cash: current.cash - medicine.price };
+
+		// Cure each disease this medicine treats
+		for (const disease of medicine.cures) {
+			next = cureDisease(next, disease);
+		}
+
+		// Apply sanity bonus
+		if (medicine.sanityBonus) {
+			next = { ...next, sanity: Math.min(100, next.sanity + medicine.sanityBonus) };
+		}
+
+		set({ state: next });
+		saveGame(next);
+		return true;
+	},
+
+	// -----------------------------------------------------------
+	// Ration action
+	// -----------------------------------------------------------
+
+	setRation: (tier) => {
+		const { state: current } = get();
+		if (!current) return;
+		const next: GameState = { ...current, rationTier: tier };
+		set({ state: next });
+		saveGame(next);
 	},
 }));
 
