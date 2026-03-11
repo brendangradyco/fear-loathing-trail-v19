@@ -2,7 +2,7 @@ import type { DataConnection, MediaConnection } from "peerjs";
 import { Peer } from "peerjs";
 import { CFG } from "../data/constants";
 import { useGameStore } from "../stores/gameStore";
-import { useNetworkStore } from "../stores/networkStore";
+import { injectBroadcast, useNetworkStore } from "../stores/networkStore";
 import { usePlayerStore } from "../stores/playerStore";
 import type { GameState, MessageType, PlayerData } from "../types";
 import { parseMessage } from "./messageProtocol";
@@ -401,6 +401,17 @@ class PeerManager {
 				});
 				break;
 			}
+
+			case "SHANK_ALERT": {
+				net.receiveShankAlert(msg.from, msg.fromName);
+				break;
+			}
+
+			case "SHANK_DODGE": {
+				// The target dodged — clear any pending shank alert on this peer's side.
+				net.clearShankAlert();
+				break;
+			}
 		}
 	}
 
@@ -478,6 +489,9 @@ class PeerManager {
 
 /** Singleton PeerManager instance */
 export const peerManager = new PeerManager();
+
+// Inject the broadcast function into networkStore to break the circular import.
+injectBroadcast((msg) => peerManager.broadcast(msg));
 
 /** Initialize networking — call once from a component or effect */
 export async function initNetwork(): Promise<void> {

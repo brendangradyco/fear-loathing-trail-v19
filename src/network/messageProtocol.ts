@@ -9,6 +9,8 @@ const VALID_TYPES = new Set([
 	"GAME_STATE",
 	"CHAT",
 	"CHAT_SYS",
+	"SHANK_ALERT",
+	"SHANK_DODGE",
 ]);
 
 /**
@@ -45,6 +47,13 @@ export function parseMessage(data: unknown): MessageType | null {
 			break;
 		case "CHAT_SYS":
 			if (typeof msg.text !== "string") return null;
+			break;
+		case "SHANK_ALERT":
+			if (typeof msg.from !== "string" || typeof msg.fromName !== "string") return null;
+			if (typeof msg.targetPid !== "string") return null;
+			break;
+		case "SHANK_DODGE":
+			if (typeof msg.targetPid !== "string") return null;
 			break;
 	}
 

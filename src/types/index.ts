@@ -170,7 +170,7 @@ export type MessageType =
 	| { type: "GAME_STATE"; game: GameState }
 	| { type: "CHAT"; text: string; sender: string; senderName: string }
 	| { type: "CHAT_SYS"; text: string }
-	| { type: "SHANK_ALERT"; attackerPid: string; attackerName: string }
+	| { type: "SHANK_ALERT"; from: string; fromName: string; targetPid: string }
 	| { type: "SHANK_DODGE"; targetPid: string };
 
 export enum DrugType {

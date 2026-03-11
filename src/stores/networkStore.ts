@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { PlayerData } from "../types";
+import type { MessageType, PlayerData } from "../types";
 
 interface ChatMessage {
 	sender: string;
@@ -13,21 +13,37 @@ interface PeerInfo {
 	player: PlayerData;
 }
 
+/** Lightweight interface so networkStore can broadcast without importing peerManager directly. */
+interface BroadcastFn {
+	(msg: MessageType): void;
+}
+
+/** Injected by peerManager after its own module initializes to break the circular dep. */
+let _broadcast: BroadcastFn | null = null;
+
+export function injectBroadcast(fn: BroadcastFn): void {
+	_broadcast = fn;
+}
+
 interface NetworkStore {
 	roomId: string | null;
 	isHost: boolean;
 	status: "disconnected" | "connecting" | "connected" | "error";
 	peers: Record<string, PeerInfo>;
+	localPlayerId: string;
+	localPlayerName: string;
 	localStream: MediaStream | null;
 	micMuted: boolean;
 	camOn: boolean;
 	chatMessages: ChatMessage[];
 	chatBadge: number;
 	chatOpen: boolean;
+	shankAlert: { from: string; fromName: string; timestamp: number } | null;
 
 	setRoomId: (roomId: string | null) => void;
 	setHost: (isHost: boolean) => void;
 	setStatus: (status: NetworkStore["status"]) => void;
+	setLocalIdentity: (id: string, name: string) => void;
 	addPeer: (id: string, info: PeerInfo) => void;
 	removePeer: (id: string) => void;
 	setLocalStream: (stream: MediaStream | null) => void;
@@ -37,6 +53,11 @@ interface NetworkStore {
 	toggleChat: () => void;
 	clearBadge: () => void;
 	reset: () => void;
+	// Shank PvP actions
+	receiveShankAlert: (from: string, fromName: string) => void;
+	clearShankAlert: () => void;
+	sendShankAlert: (targetPid: string) => void;
+	sendShankDodge: () => void;
 }
 
 export const useNetworkStore = create<NetworkStore>((set, get) => ({
@@ -44,12 +65,15 @@ export const useNetworkStore = create<NetworkStore>((set, get) => ({
 	isHost: false,
 	status: "disconnected",
 	peers: {},
+	localPlayerId: "",
+	localPlayerName: "",
 	localStream: null,
 	micMuted: false,
 	camOn: true,
 	chatMessages: [],
 	chatBadge: 0,
 	chatOpen: false,
+	shankAlert: null,
 
 	setRoomId: (roomId) => {
 		set({ roomId });
@@ -61,6 +85,10 @@ export const useNetworkStore = create<NetworkStore>((set, get) => ({
 
 	setStatus: (status) => {
 		set({ status });
+	},
+
+	setLocalIdentity: (id, name) => {
+		set({ localPlayerId: id, localPlayerName: name });
 	},
 
 	addPeer: (id, info) => {
@@ -134,6 +162,37 @@ export const useNetworkStore = create<NetworkStore>((set, get) => ({
 			chatMessages: [],
 			chatBadge: 0,
 			chatOpen: false,
+			shankAlert: null,
+		});
+	},
+
+	// -----------------------------------------------------------
+	// Shank PvP actions
+	// -----------------------------------------------------------
+
+	receiveShankAlert: (from, fromName) => {
+		set({ shankAlert: { from, fromName, timestamp: Date.now() } });
+	},
+
+	clearShankAlert: () => {
+		set({ shankAlert: null });
+	},
+
+	sendShankAlert: (targetPid) => {
+		const { localPlayerId, localPlayerName } = get();
+		_broadcast?.({
+			type: "SHANK_ALERT",
+			from: localPlayerId,
+			fromName: localPlayerName,
+			targetPid,
+		});
+	},
+
+	sendShankDodge: () => {
+		const { localPlayerId } = get();
+		_broadcast?.({
+			type: "SHANK_DODGE",
+			targetPid: localPlayerId,
 		});
 	},
 }));

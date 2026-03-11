@@ -12,3 +12,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `28a7619` feat: add shank PvP engine (src/engine/shankEngine.ts,tests/engine/shankEngine.test.ts) — 2026-03-11
 - `eb187b0` feat: add hustle, busk, and drug deal minigame engines (src/engine/buskGame.ts,src/engine/drugDealGame.ts,src/engine/hustleGame.ts,tests/engine/buskGame.test.ts,tests/engine/drugDealGame.test.ts) — 2026-03-11
 - `24200d6` feat: extend game store with drug, disease, ration, and shank state (src/stores/gameStore.ts) — 2026-03-11
+- `acb92d3` feat: extend network protocol with shank PvP messages (src/network/messageProtocol.ts,src/network/peerManager.ts,src/stores/networkStore.ts,src/types/index.ts) — 2026-03-11
