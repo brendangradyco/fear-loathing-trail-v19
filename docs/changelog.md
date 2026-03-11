@@ -10,3 +10,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `fc5f6fa` feat: add drug economy engine with buy/sell/make/harvest (src/engine/drugEconomy.ts,tests/engine/drugEconomy.test.ts) — 2026-03-11
 - `e487e89` feat: add disease and ration engines (src/engine/diseaseEngine.ts,src/engine/rationEngine.ts,tests/engine/diseaseEngine.test.ts,tests/engine/rationEngine.test.ts) — 2026-03-11
 - `28a7619` feat: add shank PvP engine (src/engine/shankEngine.ts,tests/engine/shankEngine.test.ts) — 2026-03-11
+- `eb187b0` feat: add hustle, busk, and drug deal minigame engines (src/engine/buskGame.ts,src/engine/drugDealGame.ts,src/engine/hustleGame.ts,tests/engine/buskGame.test.ts,tests/engine/drugDealGame.test.ts) — 2026-03-11
