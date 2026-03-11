@@ -1,8 +1,9 @@
 import { CFG } from "../data/constants";
 import { EVENTS } from "../data/events";
+import { RATIONS } from "../data/rations";
 import { TRAIL_STOPS } from "../data/trailStops";
 import type { GameEvent, GameState, SkillSet } from "../types";
-import { Phase } from "../types";
+import { Phase, RationType } from "../types";
 import { clamp } from "../utils/clamp";
 
 export function createNewGame(skills: SkillSet, playerId: string, playerName: string): GameState {
@@ -19,6 +20,16 @@ export function createNewGame(skills: SkillSet, playerId: string, playerName: st
 		skills,
 		log: [],
 		players: { [playerId]: { name: playerName, alive: true } },
+		drugInventory: { weed: 0, coke: 0, meth: 0, shine: 0, pills: 0 },
+		drugStatus: { weedReadyAt: -1, shineReadyAt: -1 },
+		diseases: [],
+		rationTier: RationType.Normal,
+		shankCooldown: false,
+		shankStunned: false,
+		hustleDone: false,
+		buskDone: false,
+		methCookUsed: false,
+		cokeCookUsed: false,
 	};
 }
 
@@ -27,12 +38,31 @@ export function travel(state: GameState): { state: GameState; triggeredEvent: Ga
 		return { state, triggeredEvent: null };
 	}
 
-	const fuelCost = CFG.TRAVEL_FUEL_BASE + Math.floor(Math.random() * CFG.TRAVEL_FUEL_VARIANCE);
+	const fuelVariance = CFG.FUEL_PER_LEG_MAX - CFG.FUEL_PER_LEG_MIN;
+	const fuelCost = CFG.FUEL_PER_LEG_MIN + Math.floor(Math.random() * (fuelVariance + 1));
+
+	// Consume rations
+	const rationDef = RATIONS.find((r) => r.id === state.rationTier);
+	const suppliesAfterRation = rationDef ? Math.max(0, state.supplies - rationDef.supplyCost) : state.supplies;
+	const sanityAfterRation = rationDef ? state.sanity + rationDef.sanityBonus : state.sanity;
+
+	// Apply disease drain: -8 sanity per disease
+	const diseaseDrain = state.diseases.length * CFG.DISEASE_SANITY_DRAIN;
+	const sanityAfterDiseases = sanityAfterRation - diseaseDrain;
+
 	const next: GameState = {
 		...state,
 		stopIdx: state.stopIdx + 1,
 		fuel: clamp(state.fuel - fuelCost, 0, 100),
-		supplies: Math.max(0, state.supplies - 1),
+		supplies: suppliesAfterRation,
+		sanity: clamp(sanityAfterDiseases, 0, 100),
+		// Reset per-stop cooldowns
+		shankCooldown: false,
+		shankStunned: false,
+		hustleDone: false,
+		buskDone: false,
+		methCookUsed: false,
+		cokeCookUsed: false,
 	};
 
 	// Random event chance

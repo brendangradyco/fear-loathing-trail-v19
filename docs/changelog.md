@@ -6,3 +6,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `5d5fde3` docs: add v19 React adaptation design spec () — 2026-03-11
 - `b30a424` docs: finalize implementation plan with review fixes () — 2026-03-11
 - `3205c47` feat: copy v11 React rewrite as foundation for v19 adaptation (.gitignore,biome.json,index.html,manifest.json,package-lock.json) — 2026-03-11
+- `b414871` feat: update game loop with disease drain, rations, cooldown resets (src/engine/gameLoop.ts) — 2026-03-11
