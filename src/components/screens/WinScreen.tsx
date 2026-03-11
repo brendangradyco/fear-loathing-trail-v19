@@ -9,79 +9,86 @@ function WinIllustration() {
 			className="mx-auto mb-4 block w-[220px]"
 			preserveAspectRatio="xMidYMid meet"
 		>
-			{/* Night sky with aurora */}
-			<rect width="200" height="120" fill="#001a2a" />
-
-			{/* Aurora borealis */}
-			<ellipse cx="100" cy="20" rx="90" ry="15" fill="#00ff88" opacity="0.08" />
-			<ellipse cx="80" cy="25" rx="60" ry="12" fill="#00aaff" opacity="0.06" />
-			<ellipse cx="120" cy="18" rx="50" ry="10" fill="#cc44ff" opacity="0.05" />
+			{/* Tropical night sky */}
+			<rect width="200" height="120" fill="#0a1a0a" />
 
 			{/* Stars */}
 			{[
-				[20, 10],
-				[50, 18],
-				[80, 8],
-				[120, 15],
-				[160, 12],
-				[180, 22],
-				[40, 28],
-				[140, 5],
+				[15, 8],
+				[40, 14],
+				[75, 6],
+				[110, 12],
+				[145, 8],
+				[175, 16],
+				[30, 24],
+				[90, 18],
+				[160, 10],
+				[55, 30],
+				[130, 22],
 			].map(([x, y]) => (
 				<rect key={`${x}-${y}`} x={x} y={y} width="2" height="2" fill="#fff" opacity="0.5" />
 			))}
 
-			{/* Mountains/snow */}
-			<polygon points="0,80 30,45 60,65 90,40 120,60 150,35 180,55 200,50 200,80" fill="#1a3a4a" />
-			<polygon
-				points="0,80 30,45 60,65 90,40 120,60 150,35 180,55 200,50 200,80"
-				fill="#fff"
-				opacity="0.1"
-			/>
+			{/* Moon */}
+			<circle cx="170" cy="20" r="10" fill="#ffffcc" opacity="0.6" />
+			<circle cx="173" cy="17" r="9" fill="#0a1a0a" />
 
-			{/* Snow caps */}
-			<polygon points="85,40 90,40 95,48" fill="#ddeeff" opacity="0.4" />
-			<polygon points="145,35 150,35 155,43" fill="#ddeeff" opacity="0.4" />
+			{/* Colombian mountains / skyline background */}
+			<polygon points="0,75 25,50 45,60 65,42 85,55 110,38 135,52 160,40 180,50 200,45 200,75" fill="#1a2a1a" />
 
-			{/* Ground — snow */}
-			<rect x="0" y="80" width="200" height="40" fill="#2a3a4a" />
-
-			{/* Road */}
-			<rect x="0" y="90" width="200" height="8" fill="#334" />
-
-			{/* City lights in distance */}
+			{/* City lights in the valley */}
 			{[
-				[40, 75],
-				[55, 77],
-				[70, 74],
-				[85, 76],
-				[100, 73],
-				[115, 77],
-				[130, 75],
-				[145, 74],
-				[160, 76],
+				[20, 70],
+				[35, 68],
+				[50, 71],
+				[65, 67],
+				[80, 70],
+				[95, 66],
+				[110, 69],
+				[125, 68],
+				[140, 70],
+				[155, 67],
+				[170, 69],
 			].map(([x, y]) => (
 				<rect
 					key={x}
 					x={x}
 					y={y}
 					width="3"
-					height="4"
-					fill="#ffcc00"
-					opacity="0.3"
+					height="5"
+					fill="#ffee44"
+					opacity="0.5"
 				/>
 			))}
 
-			{/* Car arriving */}
-			<rect x="70" y="83" width="26" height="9" rx="2" fill="#cc3300" />
-			<rect x="76" y="80" width="12" height="5" rx="1" fill="#aa2200" />
-			<rect x="69" y="84" width="2" height="3" fill="#ffcc00" />
+			{/* Ground */}
+			<rect x="0" y="75" width="200" height="45" fill="#0a1a0a" />
 
-			{/* Welcome sign */}
-			<rect x="150" y="72" width="2" height="18" fill="#666" />
-			<rect x="140" y="68" width="24" height="10" fill="#224422" />
-			<rect x="143" y="70" width="18" height="2" fill="#ffcc00" opacity="0.6" />
-			<rect x="143" y="74" width="14" height="1" fill="#ffcc00" opacity="0.4" />
+			{/* Road */}
+			<rect x="0" y="88" width="200" height="9" fill="#223322" />
+
+			{/* Road markings */}
+			{[20, 60, 100, 140, 180].map((x) => (
+				<rect key={x} x={x} y="92" width="12" height="2" fill="#ffee44" opacity="0.25" />
+			))}
+
+			{/* The Great Red Shark arriving */}
+			<rect x="68" y="81" width="30" height="10" rx="2" fill="#cc2200" />
+			<rect x="74" y="78" width="14" height="6" rx="1" fill="#aa1a00" />
+			{/* Headlights */}
+			<rect x="67" y="83" width="2" height="3" fill="#ffffaa" />
+
+			{/* Tropical palms */}
+			<rect x="145" y="60" width="2" height="20" fill="#2a4a2a" />
+			<ellipse cx="146" cy="58" rx="8" ry="5" fill="#2a5a2a" opacity="0.8" />
+			<rect x="165" y="65" width="2" height="16" fill="#2a4a2a" />
+			<ellipse cx="166" cy="63" rx="6" ry="4" fill="#2a5a2a" opacity="0.8" />
+
+			{/* Colombia welcome sign */}
+			<rect x="10" y="68" width="2" height="18" fill="#555" />
+			<rect x="4" y="63" width="22" height="11" fill="#cc4400" />
+			<rect x="7" y="65" width="16" height="2" fill="#ffee44" opacity="0.7" />
+			<rect x="7" y="69" width="12" height="1" fill="#ffee44" opacity="0.4" />
 
 			{/* Trophy */}
 			<g transform="translate(100, 108)">
@@ -99,9 +106,9 @@ export default function WinScreen({ onRestart }: WinScreenProps) {
 	return (
 		<div className="fixed inset-0 flex flex-col items-center justify-center gap-3 bg-bg p-8 safe-top">
 			<WinIllustration />
-			<h1 className="text-center text-[28px] font-bold text-yellow">ANCHORAGE!</h1>
+			<h1 className="text-center text-[28px] font-bold text-yellow">BOGOTA!</h1>
 			<p className="max-w-[300px] text-center text-[13px] leading-relaxed text-dim">
-				You made it to the end of the world. The bats are pleased.
+				You made it to Colombia. The bats followed the whole way.
 			</p>
 			<button
 				type="button"

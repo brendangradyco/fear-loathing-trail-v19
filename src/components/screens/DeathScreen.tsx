@@ -5,7 +5,7 @@ interface DeathScreenProps {
 
 const DEATH_MESSAGES: Record<string, string> = {
 	fuel: "Ran out of fuel. The Great Red Shark dies in the desert.",
-	sanity: "Your mind shattered somewhere outside of Barstow. The bats won.",
+	sanity: "Your mind shattered... The bats won.",
 };
 
 function DeathIllustration({ reason }: { reason: string | null }) {
