@@ -15,3 +15,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `acb92d3` feat: extend network protocol with shank PvP messages (src/network/messageProtocol.ts,src/network/peerManager.ts,src/stores/networkStore.ts,src/types/index.ts) — 2026-03-11
 - `48abc20` feat: add routing for new screens and update region selector (src/App.tsx,src/components/screens/BuskGame.tsx,src/components/screens/DrugDealGame.tsx,src/components/screens/HustleGame.tsx,src/components/screens/LocationSelect.tsx) — 2026-03-11
 - `0bfb9b8` feat: extend shop with drug dealing and medicine tabs (src/components/screens/Shop.tsx) — 2026-03-11
+- `8d0a81c` feat: extend game map with new actions and disease/drug/ration UI (src/components/game/DiseaseIndicator.tsx,src/components/game/DrugInventory.tsx,src/components/game/RationSelector.tsx,src/components/screens/GameMap.tsx) — 2026-03-11
