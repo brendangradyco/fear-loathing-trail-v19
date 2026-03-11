@@ -18,3 +18,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `8d0a81c` feat: extend game map with new actions and disease/drug/ration UI (src/components/game/DiseaseIndicator.tsx,src/components/game/DrugInventory.tsx,src/components/game/RationSelector.tsx,src/components/screens/GameMap.tsx) — 2026-03-11
 - `fa101fa` feat: add disease and drug indicators to stats bar (src/components/game/StatsBar.tsx) — 2026-03-11
 - `56f1849` feat: update win/death screens for Bogota route (src/components/screens/DeathScreen.tsx,src/components/screens/WinScreen.tsx) — 2026-03-11
+- `9bc7123` feat: implement hustle pickpocket minigame screen (src/components/screens/HustleGame.tsx) — 2026-03-11
