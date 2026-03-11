@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
+import BuskGame from "./components/screens/BuskGame";
 import CharCreate from "./components/screens/CharCreate";
 import DeathScreen from "./components/screens/DeathScreen";
+import DrugDealGame from "./components/screens/DrugDealGame";
 import GameMap from "./components/screens/GameMap";
 import HuntGame from "./components/screens/HuntGame";
+import HustleGame from "./components/screens/HustleGame";
 import Lobby from "./components/screens/Lobby";
 import LocationSelect from "./components/screens/LocationSelect";
+import ShankAlert from "./components/screens/ShankAlert";
 import Shop from "./components/screens/Shop";
 import SkillReview from "./components/screens/SkillReview";
+import TravelCinematic from "./components/screens/TravelCinematic";
 import WinScreen from "./components/screens/WinScreen";
 import ToastContainer from "./components/shared/Toast";
 import ChatPanel from "./components/social/ChatPanel";
@@ -15,19 +20,9 @@ import { loadGame, useGameStore } from "./stores/gameStore";
 import { useNetworkStore } from "./stores/networkStore";
 import { usePlayerStore } from "./stores/playerStore";
 import type { Age, Sex } from "./types";
-import { Phase, type Region } from "./types";
+import { Phase, type Region, type Screen } from "./types";
 
-type Screen =
-	| "loading"
-	| "char"
-	| "location"
-	| "skills"
-	| "lobby"
-	| "shop"
-	| "map"
-	| "hunt"
-	| "dead"
-	| "win";
+// TODO: initAudio on first user interaction
 
 export default function App() {
 	const [screen, setScreen] = useState<Screen>("loading");
@@ -48,6 +43,7 @@ export default function App() {
 	const setRoomId = useNetworkStore((s) => s.setRoomId);
 	const setHost = useNetworkStore((s) => s.setHost);
 	const setStatus = useNetworkStore((s) => s.setStatus);
+	const shankAlert = useNetworkStore((s) => s.shankAlert);
 
 	// Init: check for saved player on mount
 	useEffect(() => {
@@ -161,6 +157,26 @@ export default function App() {
 		setScreen("map");
 	}, []);
 
+	// Travel cinematic
+	const handleTravelEnd = useCallback(() => {
+		setScreen("map");
+	}, []);
+
+	// Hustle minigame
+	const handleHustleEnd = useCallback(() => {
+		setScreen("map");
+	}, []);
+
+	// Busk minigame
+	const handleBuskEnd = useCallback(() => {
+		setScreen("map");
+	}, []);
+
+	// Drug deal minigame
+	const handleDrugDealEnd = useCallback(() => {
+		setScreen("map");
+	}, []);
+
 	// Restart
 	const handleRestart = useCallback(() => {
 		resetGame();
@@ -209,19 +225,48 @@ export default function App() {
 
 			{screen === "shop" && (
 				<div className="animate-fade-in">
-					<Shop onLeave={handleShopLeave} isFirstVisit={isFirstShopVisit} />
+					<Shop onLeave={handleShopLeave} isFirstVisit={isFirstShopVisit} onDrugDeal={() => setScreen("drugdeal")} />
 				</div>
 			)}
 
 			{screen === "map" && (
 				<div className="animate-fade-in">
-					<GameMap onShop={handleShopOpen} onHunt={handleHuntStart} />
+					<GameMap
+						onShop={handleShopOpen}
+						onHunt={handleHuntStart}
+						onHustle={() => setScreen("hustle")}
+						onBusk={() => setScreen("busk")}
+					/>
 				</div>
 			)}
 
 			{screen === "hunt" && (
 				<div className="animate-fade-in">
 					<HuntGame onEnd={handleHuntEnd} />
+				</div>
+			)}
+
+			{screen === "travel" && (
+				<div className="animate-fade-in">
+					<TravelCinematic onEnd={handleTravelEnd} />
+				</div>
+			)}
+
+			{screen === "hustle" && (
+				<div className="animate-fade-in">
+					<HustleGame onEnd={handleHustleEnd} />
+				</div>
+			)}
+
+			{screen === "busk" && (
+				<div className="animate-fade-in">
+					<BuskGame onEnd={handleBuskEnd} />
+				</div>
+			)}
+
+			{screen === "drugdeal" && (
+				<div className="animate-fade-in">
+					<DrugDealGame onEnd={handleDrugDealEnd} />
 				</div>
 			)}
 
@@ -237,6 +282,9 @@ export default function App() {
 				</div>
 			)}
 
+			{/* ShankAlert overlay — rendered on top of all screens when active */}
+			{shankAlert && <ShankAlert />}
+
 			{/* Overlays */}
 			{showOverlays && (
 				<>
@@ -250,4 +298,3 @@ export default function App() {
 		</>
 	);
 }
-

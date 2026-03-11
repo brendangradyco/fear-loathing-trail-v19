@@ -13,3 +13,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `eb187b0` feat: add hustle, busk, and drug deal minigame engines (src/engine/buskGame.ts,src/engine/drugDealGame.ts,src/engine/hustleGame.ts,tests/engine/buskGame.test.ts,tests/engine/drugDealGame.test.ts) — 2026-03-11
 - `24200d6` feat: extend game store with drug, disease, ration, and shank state (src/stores/gameStore.ts) — 2026-03-11
 - `acb92d3` feat: extend network protocol with shank PvP messages (src/network/messageProtocol.ts,src/network/peerManager.ts,src/stores/networkStore.ts,src/types/index.ts) — 2026-03-11
+- `48abc20` feat: add routing for new screens and update region selector (src/App.tsx,src/components/screens/BuskGame.tsx,src/components/screens/DrugDealGame.tsx,src/components/screens/HustleGame.tsx,src/components/screens/LocationSelect.tsx) — 2026-03-11

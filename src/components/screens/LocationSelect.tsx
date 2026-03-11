@@ -81,10 +81,6 @@ export default function LocationSelect({ onComplete }: LocationSelectProps) {
 						<option value="">— Select your region —</option>
 						<option value="southwest">{"🌵"} Southwest US (Vegas / LA / Phoenix)</option>
 						<option value="northwest">{"🌲"} Northwest US (Seattle / Portland / BC)</option>
-						<option value="mountain">{"🏔️"} Mountain West (Denver / SLC / Boise)</option>
-						<option value="plains">{"🌾"} Plains &amp; East (Chicago / Dallas / NY)</option>
-						<option value="default">{"🌍"} Rest of World</option>
-						<option value="default2">{"🎲"} Surprise Me</option>
 					</select>
 				</div>
 			</div>
