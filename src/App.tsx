@@ -19,10 +19,9 @@ import VideoOverlay from "./components/social/VideoOverlay";
 import { loadGame, useGameStore } from "./stores/gameStore";
 import { useNetworkStore } from "./stores/networkStore";
 import { usePlayerStore } from "./stores/playerStore";
+import { initAudio, playLoop } from "./audio/chiptune";
 import type { Age, Sex } from "./types";
 import { Phase, type Region, type Screen } from "./types";
-
-// TODO: initAudio on first user interaction
 
 export default function App() {
 	const [screen, setScreen] = useState<Screen>("loading");
@@ -82,6 +81,22 @@ export default function App() {
 		setHost(true);
 		setStatus("connected");
 	}, [loadSavedPlayer, playerId, resumeGame, setHost, setRoomId, setStatus]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Init audio on first user interaction
+	useEffect(() => {
+		const handleFirstInteraction = () => {
+			initAudio();
+			playLoop();
+			window.removeEventListener("click", handleFirstInteraction);
+			window.removeEventListener("keydown", handleFirstInteraction);
+		};
+		window.addEventListener("click", handleFirstInteraction);
+		window.addEventListener("keydown", handleFirstInteraction);
+		return () => {
+			window.removeEventListener("click", handleFirstInteraction);
+			window.removeEventListener("keydown", handleFirstInteraction);
+		};
+	}, []);
 
 	// Watch game phase changes for death/win routing
 	useEffect(() => {

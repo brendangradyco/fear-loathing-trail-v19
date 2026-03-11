@@ -23,3 +23,4 @@ Auto-maintained by doc-guard hook. Each commit appends an entry.
 - `121194d` feat: implement drug deal stress minigame screen (src/components/screens/DrugDealGame.tsx) — 2026-03-11
 - `b38163a` feat: implement shank alert dodge overlay (src/components/screens/ShankAlert.tsx) — 2026-03-11
 - `9fc0089` feat: implement parallax travel cinematic with biome rendering (src/components/screens/TravelCinematic.tsx) — 2026-03-11
+- `42edcee` feat: add chiptune audio module with Web Audio API (src/App.tsx,src/audio/chiptune.ts) — 2026-03-11
