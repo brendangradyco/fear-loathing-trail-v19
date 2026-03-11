@@ -37,7 +37,14 @@ function drawPalmTree(ctx: CanvasRenderingContext2D, x: number, y: number, scale
 	ctx.fillRect(x - 3 * scale, y - 40 * scale, 6 * scale, 40 * scale);
 	// Leaves
 	ctx.fillStyle = "#1a6e1a";
-	const leaves = [[-15, -5], [15, -5], [-5, -15], [5, -15], [-10, -12], [10, -12]];
+	const leaves: [number, number][] = [
+		[-15, -5],
+		[15, -5],
+		[-5, -15],
+		[5, -15],
+		[-10, -12],
+		[10, -12],
+	];
 	for (const [lx, ly] of leaves) {
 		ctx.beginPath();
 		ctx.moveTo(x, y - 40 * scale);
@@ -53,7 +60,12 @@ function drawPineTree(ctx: CanvasRenderingContext2D, x: number, y: number, scale
 	ctx.fillStyle = "#5a3a1a";
 	ctx.fillRect(x - 3 * scale, y - 8 * scale, 6 * scale, 8 * scale);
 	// Layers
-	const layers = [[0, -10, 20], [0, -20, 16], [0, -28, 12], [0, -34, 8]];
+	const layers: [number, number, number][] = [
+		[0, -10, 20],
+		[0, -20, 16],
+		[0, -28, 12],
+		[0, -34, 8],
+	];
 	ctx.fillStyle = "#1a4a1a";
 	for (const [, ly, w] of layers) {
 		ctx.beginPath();
@@ -235,22 +247,34 @@ function drawMountain(
 	}
 }
 
-function drawEntity(
-	ctx: CanvasRenderingContext2D,
-	entity: Entity,
-	tick: number,
-) {
+function drawEntity(ctx: CanvasRenderingContext2D, entity: Entity, tick: number) {
 	const { type, x, y, scale } = entity;
 	switch (type) {
-		case "cactus": drawCactus(ctx, x, y, scale); break;
-		case "palm": drawPalmTree(ctx, x, y, scale); break;
-		case "pine": drawPineTree(ctx, x, y, scale); break;
-		case "building": drawBuilding(ctx, x, y, scale); break;
+		case "cactus":
+			drawCactus(ctx, x, y, scale);
+			break;
+		case "palm":
+			drawPalmTree(ctx, x, y, scale);
+			break;
+		case "pine":
+			drawPineTree(ctx, x, y, scale);
+			break;
+		case "building":
+			drawBuilding(ctx, x, y, scale);
+			break;
 		case "rock":
-		case "boulder": drawRock(ctx, x, y, scale); break;
-		case "ufo": drawUFO(ctx, x, y, scale, tick); break;
-		case "bigfoot": drawBigfoot(ctx, x, y, scale); break;
-		case "godzilla": drawGodzilla(ctx, x, y, scale); break;
+		case "boulder":
+			drawRock(ctx, x, y, scale);
+			break;
+		case "ufo":
+			drawUFO(ctx, x, y, scale, tick);
+			break;
+		case "bigfoot":
+			drawBigfoot(ctx, x, y, scale);
+			break;
+		case "godzilla":
+			drawGodzilla(ctx, x, y, scale);
+			break;
 		case "tumbleweed":
 			ctx.fillStyle = "#8b6914";
 			ctx.beginPath();
@@ -262,7 +286,14 @@ function drawEntity(
 			ctx.lineWidth = 2;
 			ctx.beginPath();
 			ctx.moveTo(x - 12 * scale, y - 4 * scale);
-			ctx.bezierCurveTo(x - 6 * scale, y - 10 * scale, x + 6 * scale, y + 2 * scale, x + 12 * scale, y - 4 * scale);
+			ctx.bezierCurveTo(
+				x - 6 * scale,
+				y - 10 * scale,
+				x + 6 * scale,
+				y + 2 * scale,
+				x + 12 * scale,
+				y - 4 * scale,
+			);
 			ctx.stroke();
 			break;
 		case "sign":
@@ -277,7 +308,14 @@ function drawEntity(
 			for (let i = 0; i < 3; i++) {
 				ctx.beginPath();
 				ctx.moveTo(x + i * 4 * scale, y);
-				ctx.bezierCurveTo(x + i * 4 * scale - 5 * scale, y - 10 * scale, x + i * 4 * scale + 5 * scale, y - 20 * scale, x + i * 4 * scale, y - 30 * scale);
+				ctx.bezierCurveTo(
+					x + i * 4 * scale - 5 * scale,
+					y - 10 * scale,
+					x + i * 4 * scale + 5 * scale,
+					y - 20 * scale,
+					x + i * 4 * scale,
+					y - 30 * scale,
+				);
 				ctx.stroke();
 			}
 			break;
@@ -353,7 +391,9 @@ export default function TravelCinematic({ onEnd }: TravelCinematicProps) {
 			// Easter egg chance
 			const isEasterEgg = Math.random() < 0.05;
 			if (isEasterEgg && biomeConfig.easterEggs.length > 0) {
-				const eggType = biomeConfig.easterEggs[Math.floor(Math.random() * biomeConfig.easterEggs.length)] as EasterEggType;
+				const eggType = biomeConfig.easterEggs[
+					Math.floor(Math.random() * biomeConfig.easterEggs.length)
+				] as EasterEggType;
 				if (eggType === "ufo") {
 					return {
 						type: "ufo",
@@ -492,9 +532,14 @@ export default function TravelCinematic({ onEnd }: TravelCinematicProps) {
 			} else if (biomeId === Biome.City) {
 				// City skyline silhouette
 				ctx.fillStyle = "#111122";
-				for (let bx = ((-terrainOffset * 0.4) % 80 | 0) - 80; bx < W + 80; bx += 50) {
-					const bh = 40 + ((Math.sin(bx * 0.07) * 0.5 + 0.5) * 60) | 0;
-					ctx.fillRect(bx, groundTopY - bh, 30 + ((Math.sin(bx * 0.1) * 0.5 + 0.5) * 20) | 0, bh + 40);
+				for (let bx = (((-terrainOffset * 0.4) % 80) | 0) - 80; bx < W + 80; bx += 50) {
+					const bh = (40 + (Math.sin(bx * 0.07) * 0.5 + 0.5) * 60) | 0;
+					ctx.fillRect(
+						bx,
+						groundTopY - bh,
+						(30 + (Math.sin(bx * 0.1) * 0.5 + 0.5) * 20) | 0,
+						bh + 40,
+					);
 				}
 			}
 
@@ -622,7 +667,8 @@ export default function TravelCinematic({ onEnd }: TravelCinematicProps) {
 					{currentStop?.emoji ?? ""} {currentStop?.name ?? ""}
 				</span>
 				<span className="text-[11px] text-[#888]" style={{ fontFamily: "monospace" }}>
-					{"→ "}{nextStop?.emoji ?? ""} {nextStop?.name ?? ""}
+					{"→ "}
+					{nextStop?.emoji ?? ""} {nextStop?.name ?? ""}
 				</span>
 			</div>
 
@@ -646,7 +692,12 @@ export default function TravelCinematic({ onEnd }: TravelCinematicProps) {
 						}
 					}}
 					className="w-full py-2 text-[12px] font-bold tracking-widest active:opacity-75"
-					style={{ border: "1px solid #444", color: "#666", background: "transparent", fontFamily: "monospace" }}
+					style={{
+						border: "1px solid #444",
+						color: "#666",
+						background: "transparent",
+						fontFamily: "monospace",
+					}}
 				>
 					SKIP
 				</button>

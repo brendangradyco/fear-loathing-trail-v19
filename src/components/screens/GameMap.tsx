@@ -96,6 +96,7 @@ export default function GameMap({ onShop, onHunt, onHustle, onBusk }: GameMapPro
 		const peerIds = Object.keys(peers);
 		if (peerIds.length === 0) return;
 		const target = peerIds[Math.floor(Math.random() * peerIds.length)];
+		if (!target) return;
 		sendShankAlert(target);
 		toast("Shank thrown!");
 	}, [state, peers, sendShankAlert]);
@@ -214,7 +215,9 @@ export default function GameMap({ onShop, onHunt, onHustle, onBusk }: GameMapPro
 								onClick={() => setRationOpen((v) => !v)}
 								className="flex w-full items-center justify-between px-3 py-2.5 text-[12px] font-bold text-dim"
 							>
-								<span>{"🍖"} Rations: {state.rationTier}</span>
+								<span>
+									{"🍖"} Rations: {state.rationTier}
+								</span>
 								<span>{rationOpen ? "▲" : "▼"}</span>
 							</button>
 							{rationOpen && (

@@ -6,6 +6,7 @@ export const CFG = {
 	REROLLS: 3,
 	STORE_KEY: "flt19_player",
 	GAME_KEY: "flt19_game",
+	PID_KEY: "flt19_pid",
 	STARTING_FUEL: 100,
 	STARTING_SANITY: 100,
 	STARTING_CASH: 350,
@@ -17,6 +18,10 @@ export const CFG = {
 	FUEL_PER_LEG_MIN: 20,
 	FUEL_PER_LEG_MAX: 34,
 	EVENT_THRESHOLDS: [0.25, 0.5, 0.75] as const,
+	EVENT_CHANCE: 0.4,
+	HUNT_DURATION: 30,
+	HUNT_TARGET_COUNT: 6,
+	HUNT_TARGET_EMOJIS: ["🦇", "🦎", "🐍", "🦅"] as const,
 	LOG_MAX: 50,
 	DISEASE_SANITY_DRAIN: 8,
 } as const;

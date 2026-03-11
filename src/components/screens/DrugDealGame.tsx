@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DEAL_DURATION, checkBust, createDealState, stayCool, tickHeat } from "../../engine/drugDealGame";
 import type { DealState } from "../../engine/drugDealGame";
+import {
+	checkBust,
+	createDealState,
+	DEAL_DURATION,
+	stayCool,
+	tickHeat,
+} from "../../engine/drugDealGame";
 import { useGameStore } from "../../stores/gameStore";
-import { toast } from "../shared/Toast";
 import { clamp } from "../../utils/clamp";
+import { toast } from "../shared/Toast";
 
 interface DrugDealGameProps {
 	onEnd: () => void;
@@ -33,7 +39,7 @@ export default function DrugDealGame({ onEnd }: DrugDealGameProps) {
 		? Object.entries(drugInventory).reduce<{ drug: string; qty: number }>(
 				(best, [drug, qty]) => (qty > best.qty ? { drug, qty } : best),
 				{ drug: "", qty: 0 },
-		  )
+			)
 		: { drug: "", qty: 0 };
 
 	// Find fiend risk — use the stored deal context if available, fallback moderate risk
@@ -43,7 +49,55 @@ export default function DrugDealGame({ onEnd }: DrugDealGameProps) {
 	// Initialize deal state
 	useEffect(() => {
 		dealStateRef.current = createDealState(fiendRisk);
-	}, [fiendRisk]);
+	}, []);
+
+	const finishDeal = useCallback(
+		(isBusted: boolean, _ds: DealState) => {
+			setBusted(isBusted);
+			setPhase("result");
+			cancelAnimationFrame(rafRef.current);
+
+			const gameState = useGameStore.getState().state;
+			if (!gameState) return;
+
+			if (isBusted) {
+				// Lose the drug and pay fine
+				const fine = 80 + Math.floor(Math.random() * 120);
+				const newInventory = { ...gameState.drugInventory };
+				if (pendingDrug.drug) {
+					newInventory[pendingDrug.drug as keyof typeof newInventory] = 0 as never;
+				}
+				const newState = {
+					...gameState,
+					drugInventory: newInventory,
+					cash: Math.max(0, gameState.cash - fine),
+					sanity: clamp(gameState.sanity - 15, 0, 100),
+				};
+				useGameStore.setState({ state: newState });
+				addLog(`Deal went south — BUSTED! Fine $${fine}, sanity -15.`, true, false);
+				toast(`BUSTED! -$${fine}`, true);
+				setEarnings(-fine);
+			} else {
+				// Successful deal — earn based on drug inventory
+				const qty = pendingDrug.qty;
+				const dealEarnings = qty > 0 ? 50 + qty * 20 + Math.floor(Math.random() * 50) : 50;
+				const newState = {
+					...gameState,
+					cash: gameState.cash + dealEarnings,
+				};
+				useGameStore.setState({ state: newState });
+				addLog(`Deal complete. +$${dealEarnings}`, false, true);
+				toast(`Deal done! +$${dealEarnings}`);
+				setEarnings(dealEarnings);
+			}
+
+			resultTimerRef.current = setTimeout(() => {
+				onEnd();
+			}, 2000);
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		},
+		[addLog, onEnd, pendingDrug],
+	);
 
 	// Game loop
 	useEffect(() => {
@@ -119,53 +173,7 @@ export default function DrugDealGame({ onEnd }: DrugDealGameProps) {
 
 		rafRef.current = requestAnimationFrame(loop);
 		return () => cancelAnimationFrame(rafRef.current);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	const finishDeal = useCallback((isBusted: boolean, ds: DealState) => {
-		setBusted(isBusted);
-		setPhase("result");
-		cancelAnimationFrame(rafRef.current);
-
-		const gameState = useGameStore.getState().state;
-		if (!gameState) return;
-
-		if (isBusted) {
-			// Lose the drug and pay fine
-			const fine = 80 + Math.floor(Math.random() * 120);
-			const newInventory = { ...gameState.drugInventory };
-			if (pendingDrug.drug) {
-				newInventory[pendingDrug.drug as keyof typeof newInventory] = 0 as never;
-			}
-			const newState = {
-				...gameState,
-				drugInventory: newInventory,
-				cash: Math.max(0, gameState.cash - fine),
-				sanity: clamp(gameState.sanity - 15, 0, 100),
-			};
-			useGameStore.setState({ state: newState });
-			addLog(`Deal went south — BUSTED! Fine $${fine}, sanity -15.`, true, false);
-			toast(`BUSTED! -$${fine}`, true);
-			setEarnings(-fine);
-		} else {
-			// Successful deal — earn based on drug inventory
-			const qty = pendingDrug.qty;
-			const dealEarnings = qty > 0 ? 50 + qty * 20 + Math.floor(Math.random() * 50) : 50;
-			const newState = {
-				...gameState,
-				cash: gameState.cash + dealEarnings,
-			};
-			useGameStore.setState({ state: newState });
-			addLog(`Deal complete. +$${dealEarnings}`, false, true);
-			toast(`Deal done! +$${dealEarnings}`);
-			setEarnings(dealEarnings);
-		}
-
-		resultTimerRef.current = setTimeout(() => {
-			onEnd();
-		}, 2000);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [addLog, onEnd, pendingDrug]);
+	}, [finishDeal]);
 
 	const handleStayCool = useCallback(() => {
 		if (!activeRef.current || !dealStateRef.current) return;
@@ -221,7 +229,10 @@ export default function DrugDealGame({ onEnd }: DrugDealGameProps) {
 								</p>
 
 								{/* Time progress */}
-								<div className="w-full" style={{ background: "#222", height: 6, border: "1px solid #444" }}>
+								<div
+									className="w-full"
+									style={{ background: "#222", height: 6, border: "1px solid #444" }}
+								>
 									<div
 										className="h-full transition-all duration-100"
 										style={{
