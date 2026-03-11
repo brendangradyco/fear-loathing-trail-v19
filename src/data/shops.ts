@@ -1,4 +1,4 @@
-import type { ShopItem } from "../types";
+import { Disease, MedicineType, type MedicineItem, type ShopItem } from "../types";
 
 export const DRUG_SHOP: ShopItem[] = [
 	{
@@ -77,4 +77,11 @@ export const SUPPLY_SHOP: ShopItem[] = [
 		effects: { sanity: 15 },
 		setEffects: { fuel: 100 },
 	},
+];
+
+export const MEDICINE_SHOP: MedicineItem[] = [
+	{ id: MedicineType.Antibiotics, name: "Antibiotics", desc: "Cures TB, measles, diphtheria", price: 80, cures: [Disease.TB, Disease.Measles, Disease.Diphtheria], sanityBonus: 0 },
+	{ id: MedicineType.Morphine, name: "Morphine", desc: "Cures broken bones, +20 sanity", price: 60, cures: [Disease.BrokenBones], sanityBonus: 20 },
+	{ id: MedicineType.Antiretrovirals, name: "Antiretrovirals", desc: "Cures AIDS", price: 150, cures: [Disease.AIDS], sanityBonus: 0 },
+	{ id: MedicineType.Naloxone, name: "Naloxone", desc: "Reverses dab overdose, +15 sanity", price: 45, cures: [Disease.Dabs], sanityBonus: 15 },
 ];
