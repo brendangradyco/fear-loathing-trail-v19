@@ -53,6 +53,7 @@ export interface EventEffect {
 	disguises?: number;
 	laserAmmo?: number;
 	meat?: number;
+	diseaseAdd?: Disease;
 }
 
 export interface SkillCheck {
@@ -127,7 +128,38 @@ export interface GameState {
 	skills: SkillSet;
 	log: LogEntry[];
 	players: Record<string, { name: string; alive: boolean }>;
+	// Drug economy
+	drugInventory: Record<DrugType, number>;
+	drugStatus: DrugStatus;
+	// Diseases
+	diseases: Disease[];
+	// Rations
+	rationTier: RationType;
+	// Shank PvP
+	shankCooldown: boolean;
+	shankStunned: boolean;
+	// Minigame cooldowns (per-stop)
+	hustleDone: boolean;
+	buskDone: boolean;
+	methCookUsed: boolean;
+	cokeCookUsed: boolean;
 }
+
+export type Screen =
+	| "loading"
+	| "char"
+	| "location"
+	| "skills"
+	| "lobby"
+	| "shop"
+	| "map"
+	| "hunt"
+	| "dead"
+	| "win"
+	| "travel"
+	| "hustle"
+	| "busk"
+	| "drugdeal";
 
 export type MessageType =
 	| { type: "HELLO"; pid: string; player: PlayerData }
@@ -137,4 +169,95 @@ export type MessageType =
 	| { type: "MEET"; peerId: string }
 	| { type: "GAME_STATE"; game: GameState }
 	| { type: "CHAT"; text: string; sender: string; senderName: string }
-	| { type: "CHAT_SYS"; text: string };
+	| { type: "CHAT_SYS"; text: string }
+	| { type: "SHANK_ALERT"; attackerPid: string; attackerName: string }
+	| { type: "SHANK_DODGE"; targetPid: string };
+
+export enum DrugType {
+	Weed = "weed",
+	Coke = "coke",
+	Meth = "meth",
+	Shine = "shine",
+	Pills = "pills",
+}
+
+export enum Disease {
+	TB = "tb",
+	Measles = "measles",
+	BrokenBones = "broken",
+	AIDS = "aids",
+	Dabs = "dabs",
+	Diphtheria = "diptheria", // matches v19 monolith typo intentionally
+}
+
+export enum RationType {
+	TinyTim = "tiny_tim",
+	Normal = "normal",
+	Fat = "fat",
+	CholesterolDaddy = "cholesterol",
+}
+
+export enum Biome {
+	Desert = "desert",
+	Jungle = "jungle",
+	Mountain = "mountain",
+	Coast = "coast",
+	City = "city",
+}
+
+export enum MedicineType {
+	Antibiotics = "antibiotics",
+	Morphine = "morphine",
+	Antiretrovirals = "antiretrovirals",
+	Naloxone = "naloxone",
+}
+
+export interface DrugDef {
+	id: DrugType;
+	name: string;
+	emoji: string;
+	buy: number;
+	sell: number;
+	makeType: "grow" | "cook" | "lab" | "still" | null;
+	yield: [number, number];
+	cost: number;
+	desc: string;
+}
+
+export interface Fiend {
+	name: string;
+	want: DrugType;
+	mult: number;
+	risk: number;
+	emoji: string;
+}
+
+export interface DiseaseDef {
+	id: Disease;
+	name: string;
+	sanityDrain: number;
+	cure: MedicineType;
+}
+
+export interface RationDef {
+	id: RationType;
+	name: string;
+	label: string;
+	supplyCost: number;
+	sanityBonus: number;
+	color: string;
+}
+
+export interface DrugStatus {
+	weedReadyAt: number; // stop index, -1 = not growing
+	shineReadyAt: number; // stop index, -1 = not stilling
+}
+
+export interface MedicineItem {
+	id: MedicineType;
+	name: string;
+	desc: string;
+	price: number;
+	cures: Disease[];
+	sanityBonus: number;
+}
